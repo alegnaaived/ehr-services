@@ -1,20 +1,15 @@
-# Dockerfile para el backend de Nest.js
-FROM node:14
+FROM node:18
 
-# Crear y establecer el directorio de trabajo
-WORKDIR /usr/src/app
+WORKDIR /backend
 
-# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalar dependencias
 RUN npm install
 
-# Copiar el resto del código
 COPY . .
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
 
-# Exponer el puerto en el que la aplicación escuchará
-EXPOSE 3000
+EXPOSE 3005
 
-# Comando para iniciar la aplicación
-CMD ["npm", "run", "start:prod"]
+CMD ["sh", "-c", "wait-for-it db:5432 -- npm run start:prod"]
